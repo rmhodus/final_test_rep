@@ -1,5 +1,5 @@
 # Використовуємо офіційний образ Node.js
-FROM node:14
+FROM public.ecr.aws/docker/library/node:14
 
 # Встановлюємо робочу директорію
 WORKDIR /usr/src/app
