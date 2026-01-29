@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  build:
+    commands:
+      - echo Build started on `date`
+      - docker build -t my-app .
+      - docker images
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - docker tag my-app:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
