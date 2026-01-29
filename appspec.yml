@@ -1,0 +1,9 @@
+version: 0.0
+os: linux
+files:
+  - source: /build/my-nodejs-app.tar
+    destination: /tmp/my-nodejs-app/
+hooks:
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 180
