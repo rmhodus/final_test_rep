@@ -13,6 +13,6 @@ phases:
     commands:
       - echo Build completed on `date`
       - docker tag my-nodejs-app:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
-      - $(aws ecr get-login --no-include-email --region us-east-1)
       - docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
+
 
