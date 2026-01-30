@@ -1,26 +1,18 @@
 #!/bin/bash
-# Включаем логирование ошибок
-set -e
+# Принудительно устанавливаем путь поиска бинарников
+export PATH=$PATH:/usr/local/bin:/usr/bin
 
-echo "Starting AfterInstall hook..."
+echo "Executing AfterInstall script..."
 
-# Указываем полные пути к docker и aws (обычно /usr/bin/)
-DOCKER="/usr/bin/docker"
-AWS="/usr/bin/aws"
-REGION="us-east-1"
-IMAGE_URL="004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest"
+# Логин в ECR (аккаунт 004226106633)
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 004226106633.dkr.ecr.us-east-1.amazonaws.com
 
-# 1. Авторизация в ECR
-echo "Logging in to Amazon ECR..."
-$AWS ecr get-login-password --region $REGION | $DOCKER login --username AWS --password-stdin 004226106633.dkr.ecr.us-east-1.amazonaws.com
+# Остановка старого контейнера
+docker stop my-nodejs-app || true
+docker rm my-nodejs-app || true
 
-# 2. Остановка и удаление старого контейнера
-echo "Cleaning up old containers..."
-$DOCKER stop my-nodejs-app || true
-$DOCKER rm my-nodejs-app || true
+# Очистка и запуск нового
+docker pull 004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
+docker run -d --name my-nodejs-app -p 80:8080 004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
 
-# 3. Запуск нового контейнера
-echo "Running new container..."
-$DOCKER run -d --name my-nodejs-app -p 80:8080 $IMAGE_URL
-
-echo "Deployment finished successfully!"
+echo "Container is up and running."
