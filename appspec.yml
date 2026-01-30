@@ -1,8 +1,8 @@
 version: 0.0
 os: linux
 files:
-  - source: /build/my-nodejs-app.tar
-    destination: /tmp/my-nodejs-app/
+  - source: /scripts
+    destination: /home/ec2-user/scripts
 hooks:
   AfterInstall:
     - location: scripts/after_install.sh
