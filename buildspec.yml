@@ -5,29 +5,29 @@ phases:
     commands:
       - echo Install started on `date`
 
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      # Логинимся сразу, чтобы билд не упал, если нужны будут базовые образы из ECR
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 004226106633.dkr.ecr.us-east-1.amazonaws.com
+
   build:
     commands:
       - echo Build started on `date`
       - docker build -t my-nodejs-app .
       - docker images
+      # Тегируем образ под твой ECR
+      - docker tag my-nodejs-app:latest 004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
 
   post_build:
     commands:
       - echo Build completed on `date`
-
-      # login to ECR
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 004226106633.dkr.ecr.us-east-1.amazonaws.com
-
-      # tag + push
-      - docker tag my-nodejs-app:latest 004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
+      - echo Pushing the Docker image...
+      # Отправляем образ в репозиторий
       - docker push 004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest
-
-      # generate imagedefinitions.json for ECS deploy action in CodePipeline
-      - printf '[{"name":"YOUR_CONTAINER_NAME_IN_TASK_DEF","imageUri":"%s"}]' \
-        004226106633.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-app:latest \
-        > imagedefinitions.json
 
 artifacts:
   files:
-    - imagedefinitions.json
-
+    # Эти файлы CodePipeline упакует в Zip и передаст в CodeDeploy
+    - appspec.yml
+    - scripts/**/*
