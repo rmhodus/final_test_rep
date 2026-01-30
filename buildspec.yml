@@ -31,3 +31,4 @@ artifacts:
     # Эти файлы CodePipeline упакует в Zip и передаст в CodeDeploy
     - appspec.yml
     - scripts/after_install.sh
+  discard-paths: no
