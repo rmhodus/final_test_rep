@@ -1,10 +1,10 @@
 version: 0.0
 os: linux
 files:
-  - source: scripts/after_install.sh
-    destination: /home/ec2-user/scripts/
+  - source: /deploy_script.sh
+    destination: /home/ec2-user/
 hooks:
   AfterInstall:
-    - location: scripts/after_install.sh
+    - location: deploy_script.sh
       timeout: 180
       runas: root
